@@ -1,15 +1,20 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form } from 'react-bootstrap'
 import Job from './Job'
+import { useSelector, useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 const MainSearch = () => {
-  const [query, setQuery] = useState('')
-  const [jobs, setJobs] = useState([])
+  const jobs = useSelector((state) => state.mainSearchJobs.content)
+  const dispatch = useDispatch()
+
+  const [query, setquery] = useState('')
+  const [searchMade, setsearchMade] = useState(false)
 
   const baseEndpoint = 'https://strive-jobs-api.herokuapp.com/jobs?search='
 
   const handleChange = (e) => {
-    setQuery(e.target.value)
+    setquery(e.target.value)
   }
 
   const handleSubmit = async (e) => {
@@ -19,7 +24,11 @@ const MainSearch = () => {
       const response = await fetch(baseEndpoint + query + '&limit=20')
       if (response.ok) {
         const { data } = await response.json()
-        setJobs(data)
+        dispatch({
+          type: 'SEARCH_JOBS',
+          payload: data,
+        })
+        setsearchMade(true)
       } else {
         alert('Error fetching results')
       }
@@ -32,7 +41,8 @@ const MainSearch = () => {
     <Container>
       <Row>
         <Col xs={10} className="mx-auto my-3">
-          <h1>Remote Jobs Search</h1>
+          <h1>Remote Jobs Search</h1>{' '}
+          <Link to="/favourites">View saved jobs</Link>
         </Col>
         <Col xs={10} className="mx-auto">
           <Form onSubmit={handleSubmit}>
@@ -44,11 +54,13 @@ const MainSearch = () => {
             />
           </Form>
         </Col>
-        <Col xs={10} className="mx-auto mb-5">
-          {jobs.map((jobData) => (
-            <Job key={jobData._id} data={jobData} />
-          ))}
-        </Col>
+        {searchMade && (
+          <Col xs={10} className="mx-auto mb-5">
+            {jobs[0].map((jobData) => (
+              <Job key={jobData._id} data={jobData} />
+            ))}
+          </Col>
+        )}
       </Row>
     </Container>
   )
