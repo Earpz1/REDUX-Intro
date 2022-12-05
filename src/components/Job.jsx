@@ -2,15 +2,13 @@ import { Row, Col } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { AiOutlineStar } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
+import { addToFavourites } from '../redux/actions'
 
 const Job = ({ data }) => {
   const dispatch = useDispatch()
 
   const saveJob = (job) => {
-    dispatch({
-      type: 'FAVOURITE_JOB',
-      payload: job,
-    })
+    dispatch(addToFavourites(job))
   }
 
   return (

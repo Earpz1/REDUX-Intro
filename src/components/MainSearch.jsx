@@ -1,17 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Container, Row, Col, Form } from 'react-bootstrap'
 import Job from './Job'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { searchResults } from '../redux/actions'
+import { getSearchResults } from '../redux/actions'
 
 const MainSearch = () => {
-  const jobs = useSelector((state) => state.mainSearchJobs.content)
+  const jobs = useSelector((state) => state.mainSearchJobs.jobs)
   const dispatch = useDispatch()
 
   const [query, setquery] = useState('')
   const [searchMade, setsearchMade] = useState(false)
 
-  const baseEndpoint = 'https://strive-jobs-api.herokuapp.com/jobs?search='
+  useEffect(() => {
+    dispatch(getSearchResults(query))
+  }, [searchMade])
 
   const handleChange = (e) => {
     setquery(e.target.value)
@@ -19,22 +23,7 @@ const MainSearch = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
-    try {
-      const response = await fetch(baseEndpoint + query + '&limit=20')
-      if (response.ok) {
-        const { data } = await response.json()
-        dispatch({
-          type: 'SEARCH_JOBS',
-          payload: data,
-        })
-        setsearchMade(true)
-      } else {
-        alert('Error fetching results')
-      }
-    } catch (error) {
-      console.log(error)
-    }
+    setsearchMade('true')
   }
 
   return (

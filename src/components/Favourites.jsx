@@ -2,15 +2,13 @@ import { Container, Row, Col, Form } from 'react-bootstrap'
 import SavedJob from './SavedJob'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { deleteFromFavourites } from '../redux/actions'
 
 const Favourites = () => {
   const dispatch = useDispatch()
 
   const deleteJob = (index) => {
-    dispatch({
-      type: 'DELETE_FAVOURITE',
-      payload: index,
-    })
+    dispatch(deleteFromFavourites(index))
   }
 
   const favourites = useSelector((state) => state.favouriteJobs.content)
